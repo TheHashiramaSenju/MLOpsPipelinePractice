@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+.venv
+data
+models
+reports
+logs
+
+data/processed/test_tfidf.csv

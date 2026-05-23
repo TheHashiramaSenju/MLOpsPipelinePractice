@@ -6,9 +6,14 @@ import logging
 from sklearn.ensemble import RandomForestClassifier
 import yaml
 
-# Ensure the "logs" directory exists
-log_dir = '../logs'
-os.makedirs(log_dir, exist_ok=True)
+# Compute repo-root-based directories and ensure logs exist
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.normpath(os.path.join(BASE_DIR, os.pardir))
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
+PROCESSED_DIR = os.path.join(ROOT_DIR, 'data', 'processed')
+MODELS_DIR = os.path.join(ROOT_DIR, 'models')
+
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # logging configuration
 logger = logging.getLogger('model_building')
@@ -17,7 +22,7 @@ logger.setLevel('DEBUG')
 console_handler = logging.StreamHandler()
 console_handler.setLevel('DEBUG')
 
-log_file_path = os.path.join(log_dir, 'model_building.log')
+log_file_path = os.path.join(LOG_DIR, 'model_building.log')
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel('DEBUG')
 
@@ -119,14 +124,14 @@ def save_model(model, file_path: str) -> None:
 
 def main():
     try:
-        params = load_params('params.yaml')['model_building']
-        train_data = load_data('../data/processed/train_tfidf.csv')
+        params = load_params(os.path.join(ROOT_DIR, 'params.yaml'))['model_building']
+        train_data = load_data(os.path.join(PROCESSED_DIR, 'train_tfidf.csv'))
         X_train = train_data.iloc[:, :-1].values
         y_train = train_data.iloc[:, -1].values
 
         clf = train_model(X_train, y_train, params)
         
-        model_save_path = '../models/model.pkl'
+        model_save_path = os.path.join(MODELS_DIR, 'model.pkl')
         save_model(clf, model_save_path)
 
     except Exception as e:

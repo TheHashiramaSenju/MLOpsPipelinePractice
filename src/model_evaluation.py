@@ -8,9 +8,15 @@ import logging
 import yaml
 #from dvclive import Live
 
-# Ensure the "logs" directory exists
-log_dir = '../logs'
-os.makedirs(log_dir, exist_ok=True)
+# Compute repo-root-based directories and ensure logs exist
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.normpath(os.path.join(BASE_DIR, os.pardir))
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
+MODELS_DIR = os.path.join(ROOT_DIR, 'models')
+PROCESSED_DIR = os.path.join(ROOT_DIR, 'data', 'processed')
+REPORTS_DIR = os.path.join(ROOT_DIR, 'reports')
+
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # logging configuration
 logger = logging.getLogger('model_evaluation')
@@ -19,7 +25,7 @@ logger.setLevel('DEBUG')
 console_handler = logging.StreamHandler()
 console_handler.setLevel('DEBUG')
 
-log_file_path = os.path.join(log_dir, 'model_evaluation.log')
+log_file_path = os.path.join(LOG_DIR, 'model_evaluation.log')
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel('DEBUG')
 
@@ -112,9 +118,9 @@ def save_metrics(metrics: dict, file_path: str) -> None:
 
 def main():
     try:
-        params = load_params(params_path='params.yaml')
-        clf = load_model('../models/model.pkl')
-        test_data = load_data('../data/processed/test_tfidf.csv')
+        params = load_params(params_path=os.path.join(ROOT_DIR, 'params.yaml'))
+        clf = load_model(os.path.join(MODELS_DIR, 'model.pkl'))
+        test_data = load_data(os.path.join(PROCESSED_DIR, 'test_tfidf.csv'))
         
         X_test = test_data.iloc[:, :-1].values
         y_test = test_data.iloc[:, -1].values
@@ -130,7 +136,7 @@ def main():
 
             live.log_params(params)
         '''
-        save_metrics(metrics, '../reports/metrics.json')
+        save_metrics(metrics, os.path.join(REPORTS_DIR, 'metrics.json'))
     except Exception as e:
         logger.error('Failed to complete the model evaluation process: %s', e)
         print(f"Error: {e}")

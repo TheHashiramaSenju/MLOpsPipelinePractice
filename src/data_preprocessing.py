@@ -10,9 +10,14 @@ nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('punkt_tab')
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.normpath(os.path.join(BASE_DIR, os.pardir))
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
+RAW_DIR = os.path.join(ROOT_DIR, 'data', 'raw')
+INTERIM_DIR = os.path.join(ROOT_DIR, 'data', 'interim')
+
 # Ensure the "logs" directory exists
-log_dir = '../logs'
-os.makedirs(log_dir, exist_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # Setting up logger
 logger = logging.getLogger('data_preprocessing')
@@ -21,7 +26,7 @@ logger.setLevel('DEBUG')
 console_handler = logging.StreamHandler()
 console_handler.setLevel('DEBUG')
 
-log_file_path = os.path.join(log_dir, 'data_preprocessing.log')
+log_file_path = os.path.join(LOG_DIR, 'data_preprocessing.log')
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel('DEBUG')
 
@@ -83,22 +88,21 @@ def main(text_column='text', target_column='target'):
     """
     try:
         # Fetch the data from data/raw
-        train_data = pd.read_csv('../data/raw/train.csv')
-        test_data = pd.read_csv('../data/raw/test.csv')
+        train_data = pd.read_csv(os.path.join(RAW_DIR, 'train.csv'))
+        test_data = pd.read_csv(os.path.join(RAW_DIR, 'test.csv'))
         logger.debug('Data loaded properly')
 
         # Transform the data
         train_processed_data = preprocess_df(train_data, text_column, target_column)
         test_processed_data = preprocess_df(test_data, text_column, target_column)
 
-        # Store the data inside data/processed
-        data_path = os.path.join("../data", "interim")
-        os.makedirs(data_path, exist_ok=True)
+        # Store the data inside data/interim
+        os.makedirs(INTERIM_DIR, exist_ok=True)
         
-        train_processed_data.to_csv(os.path.join(data_path, "train_processed.csv"), index=False)
-        test_processed_data.to_csv(os.path.join(data_path, "test_processed.csv"), index=False)
+        train_processed_data.to_csv(os.path.join(INTERIM_DIR, 'train_processed.csv'), index=False)
+        test_processed_data.to_csv(os.path.join(INTERIM_DIR, 'test_processed.csv'), index=False)
         
-        logger.debug('Processed data saved to %s', data_path)
+        logger.debug('Processed data saved to %s', INTERIM_DIR)
     except FileNotFoundError as e:
         logger.error('File not found: %s', e)
     except pd.errors.EmptyDataError as e:
