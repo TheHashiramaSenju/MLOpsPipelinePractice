@@ -6,7 +6,7 @@ import yaml
 
 
 # Ensure the "logs" directory exists
-log_dir = 'logs'
+log_dir = 'logs' #learn how to go a step back in the directory and then create the logs folder there
 os.makedirs(log_dir, exist_ok=True)
 
 
