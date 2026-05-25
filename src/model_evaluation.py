@@ -6,7 +6,7 @@ import json
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
 import logging
 import yaml
-#from dvclive import Live
+from dvclive import Live
 
 # Compute repo-root-based directories and ensure logs exist
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -127,15 +127,15 @@ def main():
 
         metrics = evaluate_model(clf, X_test, y_test)
 
-        '''
-        # Experiment tracking using dvclive
+        
+        #Experiment tracking using dvclive
         with Live(save_dvc_exp=True) as live:
             live.log_metric('accuracy', accuracy_score(y_test, y_test))
             live.log_metric('precision', precision_score(y_test, y_test))
             live.log_metric('recall', recall_score(y_test, y_test))
 
             live.log_params(params)
-        '''
+    
         save_metrics(metrics, os.path.join(REPORTS_DIR, 'metrics.json'))
     except Exception as e:
         logger.error('Failed to complete the model evaluation process: %s', e)

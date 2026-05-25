@@ -6,7 +6,7 @@ import yaml
 
 
 # Ensure the "logs" directory exists
-log_dir = 'logs' #learn how to go a step back in the directory and then create the logs folder there
+log_dir = '../logs' #learn how to go a step back in the directory and then create the logs folder there
 os.makedirs(log_dir, exist_ok=True)
 
 
@@ -86,14 +86,14 @@ def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str)
 
 def main():
     try:
-        #params = load_params(params_path='params.yaml')
-        #test_size = params['data_ingestion']['test_size']
-        test_size = 0.2
+        params = load_params(params_path='params.yaml')
+        test_size = params['data_ingestion']['test_size']
+        #test_size = 0.2
         data_path = 'https://raw.githubusercontent.com/vikashishere/Datasets/main/spam.csv'
         df = load_data(data_url=data_path)
         final_df = preprocess_data(df)
         train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=2)
-        save_data(train_data, test_data, data_path='./data')
+        save_data(train_data, test_data, data_path='data')
     except Exception as e:
         logger.error('Failed to complete the data ingestion process: %s', e)
         print(f"Error: {e}")
